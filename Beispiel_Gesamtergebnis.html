@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beispiel — Gesamtergebnis (Auswertung Konsortium)</title>
+<style>
+  :root { --navy: #1F3A5F; --accent: #B25E2E; --bg: #FAFAF7; --card: #FFF; --text: #1A1A1A; --muted: #555; --border: #DDD; --red: #B23A2E; --orange: #C77B30; --yellow: #E6B800; --green: #4F8A3A; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.55; }
+  .container { max-width: 880px; margin: 0 auto; padding: 30px 24px; }
+  header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--navy); }
+  h1 { color: var(--navy); font-size: 1.55rem; margin: 0 0 6px 0; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; font-style: italic; margin: 0; }
+  h2 { color: var(--navy); font-size: 1.2rem; margin: 28px 0 14px 0; }
+  h3 { color: var(--navy); font-size: 1.05rem; margin: 18px 0 8px 0; }
+  .summary-hero { background: linear-gradient(135deg, var(--navy), #2E4F7E); color: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; }
+  .summary-hero h2 { color: white; margin-top: 0; margin-bottom: 14px; }
+  .verdict { background: rgba(255,255,255,0.12); padding: 16px 20px; border-radius: 8px; margin-top: 14px; font-size: 1rem; }
+  .verdict strong.tag { color: white; display: block; margin-bottom: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.6px; }
+  .check-in-line { background: var(--accent); color: white; padding: 14px 18px; border-radius: 8px; margin-top: 18px; font-weight: 600; font-size: 1.02rem; }
+  .card { background: var(--card); border-radius: 8px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 16px; }
+  .dim-card { border-left: 4px solid var(--navy); padding-left: 14px; }
+  .dim-card.b { border-color: var(--accent); }
+  .dim-card.c { border-color: var(--green); }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--navy); font-weight: 700; background: #F8F5F1; }
+  .score-cell { font-weight: 700; }
+  .schaerfung-quote { background: #F8F5F1; padding: 10px 14px; border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; margin: 8px 0; font-style: italic; color: var(--muted); font-size: 0.92rem; }
+  .schaerfung-quote strong { color: var(--green); font-style: normal; display: inline-block; margin-right: 6px; }
+  .option-bar { background: #F0F0EC; border-radius: 4px; height: 22px; position: relative; overflow: hidden; margin: 4px 0; }
+  .option-bar-fill { background: var(--navy); height: 100%; }
+  .option-bar-label { position: absolute; top: 50%; left: 10px; transform: translateY(-50%); font-size: 0.82rem; color: white; font-weight: 600; mix-blend-mode: difference; }
+  .note { background: #FFF8F2; border: 1.5px dashed var(--accent); padding: 14px 18px; border-radius: 8px; margin: 16px 0; font-size: 0.9rem; color: var(--muted); }
+  .note strong { color: var(--accent); }
+  .meta { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .punktline { font-size: 0.92rem; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Beispiel — Gesamtergebnis Konsortium</h1>
+    <p class="subtitle">Vorschau · so sieht die Auswertung aus, die Klaus und André am Dienstag 12:00 Uhr verschicken</p>
+  </header>
+
+  <div class="note">
+    <strong>Vorschau-Hinweis.</strong> Dies ist ein <strong>fiktives Beispiel</strong> mit angenommenen Bewertungen von sechs Konsortialpartnern. Die echte Auswertung am Dienstag wird aus euren tatsächlichen Spielergebnissen gebaut — Struktur, Logik und Aussagekraft sind identisch.
+  </div>
+
+  <div class="summary-hero">
+    <h2>Gesamtaussage</h2>
+    <div style="font-size: 0.95rem; opacity: 0.85;">Sechs Bewertungen · 12. Mai 2026, 11:45 Uhr · Vorbereitung Check-in 12:30 Uhr</div>
+
+    <div class="verdict">
+      <strong class="tag">🎯 Methodischer Kern (Block A)</strong>
+      Methodischer Kern <strong>trägt im Konsortium</strong> — Durchschnitt 7,9 / 10. DES-Ansatz (B1: 8,3) bekommt die stärkste Zustimmung, Diskursrahmen (B3: 7,7) und lernendes Toolkit (B2: 7,7) folgen klar. Keiner der drei Bausteine fällt durch. Wir können den methodischen Kern als gemeinsame Linie in die Bewerbung schreiben.
+    </div>
+
+    <div class="verdict">
+      <strong class="tag">🧭 Strategische Position (Block B)</strong>
+      Fünf klare Signale. <strong>Format:</strong> Alle sechs wählen <em>Klassisch</em> als Fundament — Plattform fünf Stimmen, Wettbewerb vier, „Wir sind Stadt" als Mitmachformat drei, „Wir sind Stadt" als Selbstverständnis zwei, Folgeprozess zwei. <strong>Futures Literacy:</strong> Vier von sechs für <em>Integration beider</em>, zwei für Schwerpunkt Orientierung. <strong>Leitfrage:</strong> Drei Stimmen für „zukunftsfest", zwei für „am Laufen", eine für „mit-mischen". <strong>Akquise:</strong> Vier für Hybrid, zwei für Schneeball voll, keiner für Klassisch — der Schneeball-Weg wird im Konsortium getragen. <strong>Methodische Varianten:</strong> Toolkit lernend (4) und Handlungspfade (3) als Mehrheitslinien; das „unscharfe Toolkit" (2 Stimmen, beide aus plan zwei) und „Köpfe öffnen" (2) bleiben als Differenzpunkte.
+    </div>
+
+    <div class="verdict">
+      <strong class="tag">✏️ Eigene Schärfungen (Block C)</strong>
+      Sechs Schärfungs-Beiträge — drei wiederkehrende Themen: erstens Sichtbarkeit der Reflexionsebene als methodischer Lead gegenüber Urbanista; zweitens konkretere Anreize für die Kommunen über die Interessensbekundung hinaus; drittens Pilot-Lab als anschaulicher Anwendungsfall des DES-Ansatzes.
+    </div>
+
+    <div class="check-in-line">
+      🎤 Check-in-Schwerpunkt 12:30 Uhr: Format-Tiefe entscheiden · Integrationsvorschlag als methodischen Lead verabreden · Hybrid-Akquise konkretisieren · Toolkit-Position (Lisa/Hannah) klären · Klärungsagenda Block C abarbeiten.
+    </div>
+  </div>
+
+  <h2>Block A — Stimmungsbarometer (Methodischer Kern)</h2>
+
+  <div class="card dim-card">
+    <h3>Detailauswertung — Durchschnittsbewertung der drei Bausteine</h3>
+    <table>
+      <thead><tr><th>Baustein</th><th>Ø</th><th>Min</th><th>Max</th><th>Streuung</th><th>Aussage</th></tr></thead>
+      <tbody>
+        <tr><td><strong>B1</strong> DES-Ansatz</td><td class="score-cell">8,3</td><td>7</td><td>9</td><td>klein</td><td>Trägt klar.</td></tr>
+        <tr><td><strong>B2</strong> Lernendes Toolkit</td><td class="score-cell">7,7</td><td>6</td><td>9</td><td>mittel</td><td>Trägt mit leichten Vorbehalten.</td></tr>
+        <tr><td><strong>B3</strong> Drei Diskurs-Linien</td><td class="score-cell">7,7</td><td>6</td><td>8</td><td>klein</td><td>Trägt geschlossen.</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 12px; font-size: 0.92rem; color: var(--muted);"><strong>Lesart:</strong> Beim methodischen Kern brauchen wir morgen keine Grundsatzdiskussion mehr — alle drei Bausteine sind im Konsortium getragen. Die mittlere Streuung beim Toolkit (Lisa wahrscheinlich am unteren Ende, sie hat im Konsortialgespräch den „unscharfen Toolkit"-Punkt gemacht) lohnt einen kurzen Klärungsmoment.</p>
+  </div>
+
+  <h2>Block B — Strategische Klärung</h2>
+
+  <div class="card dim-card b">
+    <h3>S1 — Format und Mehrwert (Mehrfachauswahl)</h3>
+    <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 12px;">Welche Bausteine wollen wir im Angebot anbieten?</p>
+    <div class="punktline"><strong>Klassisch</strong> (Toolkit + 12–15 Labs + Schneeball) <span style="color: var(--muted);">— 6 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 100%; background: var(--green);"></div><span class="option-bar-label">100 %</span></div>
+
+    <div class="punktline"><strong>Plattform mit Trendradar &amp; Bots</strong> <span style="color: var(--muted);">— 5 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 83%; background: var(--accent);"></div><span class="option-bar-label">83 %</span></div>
+
+    <div class="punktline"><strong>Wettbewerb „Wie wird unsere Stadt zukunftsfit?"</strong> <span style="color: var(--muted);">— 4 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 67%; background: var(--accent);"></div><span class="option-bar-label">67 %</span></div>
+
+    <div class="punktline"><strong>„Wir sind Stadt" — als Mitmachformat der Bürger:innen</strong> <span style="color: var(--muted);">— 3 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 50%; background: var(--accent);"></div><span class="option-bar-label">50 %</span></div>
+
+    <div class="punktline"><strong>„Wir sind Stadt" — als Selbstverständnis der Kommune</strong> <span style="color: var(--muted);">— 2 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 33%; background: var(--orange);"></div><span class="option-bar-label">33 %</span></div>
+
+    <div class="punktline"><strong>Folgeprozess im Zweijahres-Rhythmus</strong> <span style="color: var(--muted);">— 2 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 33%; background: var(--orange);"></div><span class="option-bar-label">33 %</span></div>
+
+    <p style="margin-top: 14px; font-size: 0.92rem; color: var(--muted);"><strong>Lesart:</strong> Klares Bild — wir bauen die Bewerbung auf <em>Klassisch + Plattform + Wettbewerb</em>, mit „Wir sind Stadt" als Mitmachformat als angedachte Erweiterung. Selbstverständnis-Variante und Folgeprozess kommen mehrheitlich nicht in den Erstantrag, sondern werden als Anschluss-Optionen genannt.</p>
+  </div>
+
+  <div class="card dim-card b">
+    <h3>S2 — Futures Literacy (Einzelwahl)</h3>
+    <div class="punktline"><strong>Integration beider</strong> <span style="color: var(--muted);">— 4 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 67%; background: var(--green);"></div><span class="option-bar-label">67 %</span></div>
+
+    <div class="punktline"><strong>Schwerpunkt Orientierungswissen</strong> <span style="color: var(--muted);">— 2 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 33%; background: var(--orange);"></div><span class="option-bar-label">33 %</span></div>
+
+    <div class="punktline"><strong>Schwerpunkt Futures Literacy</strong> <span style="color: var(--muted);">— 0 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 0%;"></div><span class="option-bar-label">0 %</span></div>
+
+    <p style="margin-top: 14px; font-size: 0.92rem; color: var(--muted);"><strong>Lesart:</strong> Integrationsvorschlag ist die Mehrheitsposition — Kommunikationsstrategie durch Zukunftsforscher-Brille plus Serious Games mit „andere-Stadt"-Prinzip. Die zwei Stimmen für reines Orientierungswissen sind ein methodisches Signal: pragmatischer Anschluss an die kommunale Praxis muss in jedem Lab sichtbar bleiben.</p>
+  </div>
+
+  <div class="card dim-card b">
+    <h3>S3 — Leitfrage an die Kommunen (Einzelwahl)</h3>
+    <div class="punktline"><strong>„Was macht eure Stadt zukunftsfest?"</strong> <span style="color: var(--muted);">— 3 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 50%; background: var(--green);"></div><span class="option-bar-label">50 %</span></div>
+
+    <div class="punktline"><strong>„Was hält eure Stadt am Laufen?"</strong> <span style="color: var(--muted);">— 2 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 33%; background: var(--accent);"></div><span class="option-bar-label">33 %</span></div>
+
+    <div class="punktline"><strong>„Wer mischt mit in eurer Stadt?"</strong> <span style="color: var(--muted);">— 1 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 17%; background: var(--orange);"></div><span class="option-bar-label">17 %</span></div>
+
+    <p style="margin-top: 14px; font-size: 0.92rem; color: var(--muted);"><strong>Lesart:</strong> Die niederschwellige Variante hat die Mehrheit, mit klarem Anschluss an Standortmarketing. „Am Laufen" trägt eine fachlich-kommunalpolitische Linie, „Wer mischt mit" eröffnet die Beteiligungsfrage. Klärungsbedarf: nehmen wir die Mehrheit als verbindliche Leitfrage — oder lassen wir den Kommunen die Wahl aus dem Drei-Linien-Set?</p>
+  </div>
+
+  <div class="card dim-card b">
+    <h3>S4 — Akquise: wie gewinnen wir die unterforschten Kommunen? (Einzelwahl)</h3>
+    <div class="punktline"><strong>Hybrid: Schneeball plus klassischer Aufruf</strong> <span style="color: var(--muted);">— 4 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 67%; background: var(--green);"></div><span class="option-bar-label">67 %</span></div>
+
+    <div class="punktline"><strong>Schneeball-Weg voll</strong> <span style="color: var(--muted);">— 2 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 33%; background: var(--accent);"></div><span class="option-bar-label">33 %</span></div>
+
+    <div class="punktline"><strong>Klassischer Aufruf primär</strong> <span style="color: var(--muted);">— 0 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 0%;"></div><span class="option-bar-label">0 %</span></div>
+
+    <p style="margin-top: 14px; font-size: 0.92rem; color: var(--muted);"><strong>Lesart:</strong> Das Konsortium trägt den Schneeball-Weg — niemand will den rein klassischen Aufruf. Die Hybrid-Mehrheit ist pragmatisch: Schneeball als Hauptweg, klassischer Aufruf als Sicherheitsnetz. Klärungsbedarf: Wer aus dem Konsortium spricht welche Kommune im Hintergrund an? Liste muss bis nächste Woche stehen.</p>
+  </div>
+
+  <div class="card dim-card b">
+    <h3>S5 — Methodische Varianten: was tragen wir? (Mehrfachauswahl)</h3>
+    <div class="punktline"><strong>Lernendes Toolkit (zwei Wellen + Update v2)</strong> <span style="color: var(--muted);">— 4 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 67%; background: var(--green);"></div><span class="option-bar-label">67 %</span></div>
+
+    <div class="punktline"><strong>Handlungspfade ableiten (Peters Linie 2)</strong> <span style="color: var(--muted);">— 3 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 50%; background: var(--accent);"></div><span class="option-bar-label">50 %</span></div>
+
+    <div class="punktline"><strong>Unscharfes Toolkit (Lisas Variante)</strong> <span style="color: var(--muted);">— 2 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 33%; background: var(--orange);"></div><span class="option-bar-label">33 %</span></div>
+
+    <div class="punktline"><strong>Köpfe öffnen (Peters Linie 1)</strong> <span style="color: var(--muted);">— 2 von 6 Stimmen</span></div>
+    <div class="option-bar"><div class="option-bar-fill" style="width: 33%; background: var(--orange);"></div><span class="option-bar-label">33 %</span></div>
+
+    <p style="margin-top: 14px; font-size: 0.92rem; color: var(--muted);"><strong>Lesart:</strong> Mehrheit für lernendes Toolkit plus Handlungspfade — das ist die operativ tragfähige Mainline. Die zwei Stimmen für „unscharfes Toolkit" kommen beide aus plan zwei (Lisa, Hannah) — diese Position muss morgen im Check-in besprochen werden, sonst tragen sie das Toolkit-Versprechen in der Bewerbung halbherzig. Köpfe-Öffnen-Stimmen kommen von Magdalena und Klaus — Reflexionsebene als Lab-Funktion bleibt als Akzent erhalten.</p>
+  </div>
+
+  <h2>Block C — Klärungsagenda für den Check-in</h2>
+
+  <div class="card dim-card c">
+    <p style="font-size: 0.92rem; color: var(--muted); margin-top: 0;"><strong>Was muss morgen unbedingt geklärt werden?</strong> Die direkten Antworten der sechs Konsortialpartner aus Block C — das ist die Tagesordnung für den Check-in.</p>
+
+    <div class="schaerfung-quote"><strong>Magdalena Soetebeer:</strong> „Wie zentral wird die Reflexionsebene? Wenn wir sie zur Lead-Position machen, brauchen wir morgen die Formulierung dafür — UNESCO plus Mau als Anker in LB 2.2.2."</div>
+    <div class="schaerfung-quote"><strong>André Winzer:</strong> „Plattform-Komponente: tragen wir das in die Bewerbung — und mit welcher Kostenposition? Kalkulation muss am Donnerstag stehen."</div>
+    <div class="schaerfung-quote"><strong>Lisa Niese:</strong> „Toolkit-Versprechen klären — sprechen wir vom Standard-Set oder vom „unscharfen Toolkit"? Daran hängt die Anschluss-Logik für die Kommunen."</div>
+    <div class="schaerfung-quote"><strong>Hannah Dietze:</strong> „Akquise-Pfad: Schneeball-Weg ist riskant. Wenn wir ihn nehmen, brauchen wir das Anreizpaket konkret — Sichtbarkeit, ISEK-Anschluss, Materialien."</div>
+    <div class="schaerfung-quote"><strong>Kai Böhme:</strong> „Pilot-Lab als Anhang in LB 2.2.1 ausarbeiten — fiktive Kommune, durchgespielt. Das überzeugt das BBSR mehr als jede Methodikbeschreibung."</div>
+    <div class="schaerfung-quote"><strong>Peter Dehne:</strong> „Zielgruppen-Schwerpunkt — wollen wir Köpfe öffnen oder Handlungspfade ableiten? Die Antwort bestimmt die Lab-Architektur."</div>
+
+    <p style="margin-top: 16px; font-size: 0.92rem; color: var(--muted);"><strong>Daraus die sechs Punkte für den Check-in:</strong> (1) Reflexionsebene als Lead — Formulierung verabreden · (2) Plattform-Komponente: ja/nein + Kostenposition · (3) Toolkit-Versprechen: Standard oder „unscharf" · (4) Akquise-Pfad + Anreizpaket · (5) Pilot-Lab als Anhang ja/nein · (6) Zielgruppen-Schwerpunkt entscheiden.</p>
+  </div>
+
+  <h2>Querschnitt — Schärfungen für die Bewerbung</h2>
+
+  <div class="card dim-card c">
+    <p style="font-size: 0.92rem; color: var(--muted); margin-top: 0;">Aus den weiteren Freitext-Antworten der Block-B-Fragen lassen sich drei wiederkehrende Themen herausziehen, die direkt in die Bewerbung einfließen:</p>
+
+    <h3>1. Methodischer Lead: Reflexionsebene sichtbar machen</h3>
+    <div class="schaerfung-quote">Magdalenas Hinweis zur Spannung Orientierung ↔ Reflexion, plus Andrés Bezug auf UNESCO und Mau-Triggerpunkte als theoretischer Anker — in LB 2.2.2 explizit verankern.</div>
+
+    <h3>2. Kommunengewinnung: Anreize konkretisieren</h3>
+    <div class="schaerfung-quote">Lisa: klareres Anreizpaket — Sichtbarkeit, Toolkit-Übergabe, NSP-Profil als Set. Hannah: ISEK-Anschluss als Mehrwert in der Akquise — strukturschwache Städte fühlen sich abgeholt, nicht überfordert.</div>
+
+    <h3>3. DES-Ansatz: Pilot-Lab als Anwendungsfall</h3>
+    <div class="schaerfung-quote">Peter und Kai: ein durchgespieltes Beispiel-Lab — fiktive Kommune, drei Stresstest-Szenarien, vier Trendmoleküle, drei Strategiepfade — in LB 2.2.1 als Anhang einbauen.</div>
+  </div>
+
+  <h2>Konsequenzen für die Bewerbung</h2>
+
+  <div class="card">
+    <p><strong>Methodisch.</strong> DES-Ansatz, lernendes Toolkit, drei Diskursrahmen werden als gesetzt geschrieben. Integration von Orientierung und Reflexion wird zur methodischen Lead-Position — UNESCO-Anbindung plus Mau-Triggerpunkte explizit verankert.</p>
+
+    <p><strong>Format.</strong> Klassisches Modell als Fundament. Plattform mit Trendradar und Wettbewerb „Wie wird unsere Stadt zukunftsfit?" werden als Mehrwert in die Bewerbung aufgenommen. Kongress und Folgeprozess werden als Anschluss-Optionen genannt — nicht als Pflichtbestandteil des Auftrags.</p>
+
+    <p><strong>Leitfrage.</strong> Voraussichtlich „Was macht eure Stadt zukunftsfest?" als verbindende Leitfrage — Klärung morgen, ob alternative Formulierungen je nach Kommune möglich bleiben.</p>
+
+    <p><strong>Drei Schärfungen einbauen.</strong> Anreizpaket konkretisieren · Pilot-Lab als Anhang · Reflexions-Schicht in LB 2.2.2 explizit.</p>
+  </div>
+
+  <div class="meta">Klaus Burmeister (foresightlab) · André Winzer (schaltzeit) · 12. Mai 2026, 11:45 Uhr · Auswertung aus sechs Spielergebnissen</div>
+</div>
+</body>
+</html>

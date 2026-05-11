@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urban Future Labs — Stimmungsbarometer & strategische Klärung</title>
+<style>
+  :root { --navy: #1F3A5F; --accent: #B25E2E; --bg: #FAFAF7; --card: #FFF; --text: #1A1A1A; --muted: #555; --border: #DDD; --red: #B23A2E; --orange: #C77B30; --yellow: #E6B800; --green: #4F8A3A; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.55; }
+  .container { max-width: 820px; margin: 0 auto; padding: 30px 24px; }
+  header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--navy); }
+  h1 { color: var(--navy); font-size: 1.55rem; margin: 0 0 6px 0; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; font-style: italic; margin: 0; }
+  h2 { color: var(--navy); font-size: 1.2rem; margin: 0 0 10px 0; }
+  .progress { background: #EEE; height: 6px; border-radius: 3px; overflow: hidden; margin: 18px 0; }
+  .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.3s ease; }
+  .card { background: var(--card); border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 18px; }
+  .block-tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; background: var(--navy); }
+  .block-tag.b { background: var(--accent); }
+  .block-tag.c { background: #4F8A3A; }
+  .frage-titel { color: var(--navy); font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0; }
+  .erklaerung { color: var(--muted); font-size: 0.92rem; margin: 6px 0 14px 0; }
+  .label { font-weight: 600; color: var(--navy); margin-bottom: 4px; display: block; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.4px; }
+  .scale-container { margin: 12px 0; background: #F8F5F1; border-radius: 8px; padding: 14px 12px 10px 12px; }
+  .scale-buttons { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
+  .scale-btn { aspect-ratio: 1; min-height: 36px; border: 1.5px solid var(--border); background: white; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; color: var(--text); transition: all 0.12s ease; }
+  .scale-btn:hover { border-color: var(--accent); background: #FFF8F2; transform: scale(1.05); }
+  .scale-btn.selected { background: var(--accent); color: white; border-color: var(--accent); transform: scale(1.1); box-shadow: 0 2px 8px rgba(178, 94, 46, 0.3); }
+  .scale-labels { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; margin-top: 6px; font-size: 0.66rem; color: var(--muted); text-align: center; line-height: 1.2; }
+  .current-choice { margin-top: 10px; padding: 8px 12px; background: var(--navy); color: white; border-radius: 6px; font-size: 0.92rem; text-align: center; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+  .current-choice.empty { background: #F0F0EC; color: var(--muted); font-style: italic; }
+  .option-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+  .option-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: #F8F5F1; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.12s ease; }
+  .option-row:hover { border-color: var(--accent); background: #FFF8F2; }
+  .option-row.selected { border-color: var(--accent); background: #FFF8F2; box-shadow: 0 1px 4px rgba(178, 94, 46, 0.15); }
+  .option-row input { margin-top: 4px; cursor: pointer; transform: scale(1.2); accent-color: var(--accent); }
+  .option-row .option-text { flex: 1; }
+  .option-row .option-text strong { color: var(--navy); display: block; margin-bottom: 4px; }
+  .option-row .option-text .desc { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+  textarea { width: 100%; min-height: 70px; border: 1.5px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: inherit; font-size: 0.93rem; resize: vertical; margin-top: 6px; background: white; }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  textarea.large { min-height: 130px; }
+  .nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; }
+  button { background: var(--navy); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; cursor: pointer; font-weight: 600; transition: background 0.15s ease; }
+  button:hover { background: #2E4F7E; }
+  button:disabled { background: #999; cursor: not-allowed; }
+  button.secondary { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+  button.secondary:hover { background: #F0F4F8; }
+  button.accent { background: var(--accent); }
+  button.accent:hover { background: #D17536; }
+  .hidden { display: none; }
+  input[type="text"] { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: inherit; font-size: 0.95rem; margin-top: 6px; }
+  input[type="text"]:focus { outline: none; border-color: var(--accent); }
+  .result-hero { background: linear-gradient(135deg, var(--navy), #2E4F7E); color: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; }
+  .result-hero h2 { color: white; margin-top: 0; }
+  .result-line { background: rgba(255,255,255,0.1); padding: 14px 18px; border-radius: 8px; margin-top: 14px; font-size: 0.97rem; }
+  .result-line strong { color: white; display: block; margin-bottom: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.6px; }
+  .summary-frage { border-left: 3px solid var(--accent); padding: 10px 14px; margin: 10px 0; background: #F8F5F1; border-radius: 0 6px 6px 0; font-size: 0.93rem; }
+  .summary-frage .answer { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.82rem; font-weight: 600; color: white; margin: 4px 0; }
+  .summary-frage .freetext { margin-top: 6px; color: var(--muted); font-size: 0.88rem; font-style: italic; }
+  .export-area { background: #F0F0EC; padding: 14px; border-radius: 6px; font-family: monospace; font-size: 0.82rem; white-space: pre-wrap; margin-top: 12px; max-height: 320px; overflow-y: auto; }
+  .meta { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--border); }
+  @media (max-width: 600px) { .scale-btn { min-height: 30px; font-size: 0.82rem; } .scale-labels { font-size: 0.56rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Stimmungsbarometer & strategische Klärung</h1>
+    <p class="subtitle">Konsortium Urban Future Labs · BBSR-ExWoSt 10.04.04-26.090 · Vorbereitung Check-in 12.05.2026, 12:30 Uhr</p>
+  </header>
+
+  <div id="intro" class="card">
+    <h2>Worum es geht</h2>
+    <p>Drei Blöcke. <strong>Block A</strong> — drei kurze Stimmungs-Klicks zum methodischen Kern (DES-Ansatz, lernendes Toolkit, drei Diskurs-Linien). Hier erwarten wir Zustimmung — wenn jemand niedrig klickt, sehen wir das im Dashboard. <strong>Block B</strong> — fünf strategische Klärungsfragen, die aus den Protokollen offen sind (Format & Mehrwert, Futures Literacy, Leitfrage, Akquise, methodische Varianten). <strong>Block C</strong> — eine offene Frage am Ende: was muss morgen unbedingt geklärt werden.</p>
+    <p>Dauer rund zehn Minuten. Am Ende: Profil, Übersicht deiner Antworten, Export zum Verschicken an Klaus und André.</p>
+    <div style="margin-top: 12px;">
+      <label class="label">Dein Name</label>
+      <input type="text" id="player-name" placeholder="z.B. Magdalena Soetebeer">
+    </div>
+    <div class="nav"><span></span><button class="accent" onclick="startGame()">Los geht's →</button></div>
+  </div>
+
+  <div id="game-area" class="hidden">
+    <div class="progress"><div class="progress-fill" id="progress"></div></div>
+    <div id="frage-container"></div>
+  </div>
+
+  <div id="result-area" class="hidden"></div>
+
+  <div class="meta">Klaus Burmeister (foresightlab) · André Winzer (schaltzeit) · 11. Mai 2026</div>
+</div>
+
+<script>
+const FRAGEN = [
+  // --- BLOCK A: Stimmungsbarometer (Skala 0-10) ---
+  {
+    nr: "B1", block: "A", type: "skala",
+    titel: "DES-Ansatz — Diagnose · Exploration · Strategie",
+    erklaerung: "Wir verbinden Stresstest Stadt (BBSR 2018) und Trendmoleküle (BBSR 2022) zu einer dreischrittigen Logik: Diagnose (wo steht die Stadt?), Exploration (welche Zukünfte sind denkbar?), Strategie (welche Pfade sind robust?). Diese Verschränkung gibt es im BBSR-Bestand noch nicht — unser methodischer Strukturierungs-Vorschlag für die Trendmolekül-Aktualisierung (LB 2.2.1) und die Lab-Methodik."
+  },
+  {
+    nr: "B2", block: "A", type: "skala",
+    titel: "Lernendes Toolkit — zwei Wellen mit Update v2",
+    erklaerung: "Drei Erprobungs-Labs 2027 mit Toolkit-Beta. Sichtbares Update v2 Anfang 2028 mit dokumentiertem Änderungslog. Neun bis zwölf weitere Labs bis Oktober 2028 mit überarbeitetem Toolkit. Lerngeschichte transparent, das System lernt durch die unterschiedlichen Zugänge und Nutzungen der Teilnehmenden."
+  },
+  {
+    nr: "B3", block: "A", type: "skala",
+    titel: "Drei Diskurs-Linien als gemeinsame Setzung",
+    erklaerung: "Tragen wir die drei Linien als methodische Klammer in der Bewerbung? — transformative Resilienz (Widerstandskraft durch Lernfähigkeit), Städte als Räume lebendiger Demokratie, kommunale Daseinsvorsorge unter Druck. Sie formen unsere Sprache nach außen und entscheiden, welche Lab-Themen wir priorisieren."
+  },
+
+  // --- BLOCK B: Strategische Klärung ---
+  {
+    nr: "S1", block: "B", type: "multiselect", maxSelect: 3,
+    titel: "Format & Mehrwert — welches Modell wollen wir?",
+    erklaerung: "Bisher haben wir das klassische Modell skizziert. Diskutiert wird ein ambitionierteres Format mit Plattform, Wettbewerb und „Wir sind Stadt“-Bausteinen. Was würdest du tragen? Bis zu drei Optionen ankreuzen, eigene Bausteine über das Freitext-Feld hinzufügen.",
+    optionen: [
+      { id: "klassisch", label: "Klassisch", desc: "Toolkit als Endprodukt, 12–15 Urban Future Labs, Schneeball-Akquise, Übergabe ans BBSR nach Projektende. Das Fundament." },
+      { id: "plattform", label: "Plattform mit Trendradar & Bots", desc: "Digitale Plattform mit kommunalen Accounts, automatisierten Quellen, Bots-Funktionalität. Geht über das klassische Toolkit hinaus." },
+      { id: "wettbewerb", label: "Wettbewerb \"Wie wird unsere Stadt zukunftsfit?\"", desc: "Kommunen bewerben sich, qualifizieren sich aktiv. Sichtbarkeit, Urkunden, personalisierte Toolkits als Anreiz." },
+      { id: "wirsindstadt_buerger", label: "\"Wir sind Stadt\" — als Mitmachformat der Bürger:innen", desc: "Bundesweite Mobilisierung, lokale Aktionen plus digitale Vernetzung — im Sinne der Bürgerinnen und Bürger." },
+      { id: "wirsindstadt_kommune", label: "\"Wir sind Stadt\" — als Selbstverständnis der Kommune", desc: "Profil, Sichtbarkeit, Urkunde, Materialien für die kommunale Außendarstellung — aus dem Verständnis der Kommune." },
+      { id: "folgeprozess", label: "Folgeprozess im Zweijahres-Rhythmus", desc: "Plattform mit Toolkit-Updates und neuen Lab-Wellen über das Projektende hinaus — Trägerschaft offen (KSA, NSP)." }
+    ],
+    freetextLabel: "Eigene Bausteine ergänzen oder begründen"
+  },
+  {
+    nr: "S2", block: "B", type: "single",
+    titel: "Futures Literacy — wie zentral?",
+    erklaerung: "Im Konsortium wurde die zentrale Spannung der LB benannt: Wissensbereitstellung als Orientierung („da geht's lang“) versus Wissensbereitstellung als Anlass zur Reflexion über die eigenen Zukunftsannahmen („warum denken wir, dass es da langgeht?“). Die LB verlangt beides — unter UNESCO-Bezug. Wie weit treiben wir die Reflexionsebene?",
+    optionen: [
+      { id: "orientierung", label: "Schwerpunkt Orientierungswissen", desc: "Trends, Szenarien, Handlungsoptionen. Reflexionsebene nur als Methoden-Hinweis im Toolkit. Pragmatisch, kommunal anschlussfähig." },
+      { id: "literacy", label: "Schwerpunkt Futures Literacy", desc: "Meta-Reflexion über Zukunftsannahmen als Lab-Kernbestandteil. Anschluss an UNESCO und Mau et al. 2023 (Triggerpunkte). Anspruchsvoller, politisch heikler." },
+      { id: "integration", label: "Integration beider", desc: "Kommunikationsstrategie durch die Brille von Zukunftsforscher:innen plus Serious Games mit \"andere-Stadt\"-Prinzip. Bias-Schutz durch Arbeit an anderer Stadt, Reflexion über das Spielformat eingeführt." }
+    ],
+    freetextLabel: "Begründung — warum diese Position?"
+  },
+  {
+    nr: "S3", block: "B", type: "single",
+    titel: "Leitfrage — was fragen wir die Kommunen?",
+    erklaerung: "Mit welcher zentralen Frage gehen wir auf die Kommunen zu? Davon hängt ab, wie die Akquise klingt, welche Akteure sich angesprochen fühlen und wie wir den methodischen Bogen spannen. Drei Vorschläge plus eigene Formulierung.",
+    optionen: [
+      { id: "zukunftsfest", label: "\"Was macht eure Stadt zukunftsfest?\"", desc: "Diskurs-Linie Resilienz. Niederschwellig, anschlussfähig an Standortmarketing, eröffnet alle Themenachsen." },
+      { id: "daseinsvorsorge", label: "\"Was hält eure Stadt am Laufen?\"", desc: "Diskurs-Linie Daseinsvorsorge. Konkret, alltagsnah, fängt Versorgungs- und Infrastrukturfragen ein." },
+      { id: "demokratie", label: "\"Wer mischt mit in eurer Stadt?\"", desc: "Diskurs-Linie Demokratie. Eröffnet Beteiligungs- und Mitwirkungsfragen, ohne polarisierende Aufladung." }
+    ],
+    freetextLabel: "Eigener Vorschlag oder Variante"
+  },
+  {
+    nr: "S4", block: "B", type: "single",
+    titel: "Akquise — wie gewinnen wir die unterforschten Kommunen?",
+    erklaerung: "Die LB verlangt, dass ein Drittel der Modellkommunen aus bislang unterforschten Klein- und Mittelstädten kommt. Genau diese Kommunen erreicht ein klassischer Aufruf kaum — die üblichen Verdächtigen bewerben sich, die unterforschten bleiben außen vor. Der Schneeball-Weg: bekannte Kommunen werden gefragt, wer in ihrem Umfeld noch unterforscht ist; über Vertrauensbeziehungen kommen wir an die Zielkommunen heran. Riskanter, aber zielgenauer. Wie sehen wir das?",
+    optionen: [
+      { id: "schneeball", label: "Schneeball-Weg voll", desc: "Wir setzen primär auf das umgekehrte Bewerbungsverfahren plus Hintergrund-Ansprache über Netzwerke (Kleinstadtakademie, plan-zwei-Verbände, Peter Dehnes Projektwelt, BUGA-Werkraum). Ambitioniert, aber zielgenau für die unterforschten Kommunen." },
+      { id: "hybrid", label: "Hybrid: Schneeball plus klassischer Aufruf", desc: "Schneeball als Hauptweg für das unterforschte Drittel, klassischer Aufruf für die übrigen zwei Drittel. Sicherheitsnetz, falls Schneeball nicht trägt." },
+      { id: "klassisch_aufruf", label: "Klassischer Aufruf primär", desc: "Bewerbungsverfahren über BBSR-Verteiler und Spitzenverbände. Konventionell und gut planbar — erreicht aber die unterforschten Kommunen erfahrungsgemäß nicht." }
+    ],
+    freetextLabel: "Begründung oder Variante"
+  },
+  {
+    nr: "S5", block: "B", type: "multiselect", maxSelect: 2,
+    titel: "Methodische Varianten — was tragen wir?",
+    erklaerung: "Im Konsortialmeeting wurden zwei methodische Differenzen benannt. Lisa Niese hat den Toolkit-Begriff kritisch hinterfragt — Planungsarbeit ist ortsspezifisch, ein standardisiertes Toolkit ist „merkwürdiges Versprechen“; sie schlägt ein „unscharfes Toolkit“ vor. Peter Dehne hat zwei Lab-Richtungen unterschieden: Köpfe öffnen (Zukunftsoptionen freier betrachten) oder Handlungspfade ableiten (problem- und handlungsorientiert). Welche Positionen trägst du? Bis zu zwei wählbar.",
+    optionen: [
+      { id: "toolkit_lernend", label: "Lernendes Toolkit (zwei Wellen + Update v2)", desc: "Standardisiertes Set mit dokumentierter Iteration. Reproduzierbar, modular, übergabefähig — wie in B2." },
+      { id: "toolkit_unscharf", label: "Unscharfes Toolkit (Lisas Variante)", desc: "Anpassbares Set ohne Standardisierungsanspruch. Methodische Versatzstücke, die jede Kommune ortsspezifisch konfiguriert. Realistischer in der Planungspraxis." },
+      { id: "koepfe_oeffnen", label: "Köpfe öffnen (Peters Linie 1)", desc: "Labs als Denkräume. Zukunftsoptionen freier betrachten, vom Alltagsdenken lösen, Imagination wecken. Eher abstrakt, eher für Führungsebene." },
+      { id: "handlungspfade", label: "Handlungspfade ableiten (Peters Linie 2)", desc: "Labs als Strategieräume. Problem- und handlungsorientiert, konkrete Pfade für Verwaltung und Politik. Anschluss an ISEK und Klimaanpassungsstrategien." }
+    ],
+    freetextLabel: "Begründung oder Variante"
+  },
+
+  // --- BLOCK C: Offene Frage ---
+  {
+    nr: "C1", block: "C", type: "open",
+    titel: "Was muss morgen unbedingt geklärt werden?",
+    erklaerung: "Was ist dir besonders wichtig? Was hat in den bisherigen Fragen gefehlt? Was sollte im Check-in morgen früh nicht untergehen? Hier ist Raum für deine Schärfung — eigene Hinweise, Bedenken, Ideen.",
+    freetextLabel: "Freitext"
+  }
+];
+
+const SCALE_LABELS = { 0: "Ach nö", 2: "Skepsis", 4: "Vorbehalte", 6: "Passt", 8: "Trage mit", 10: "Voll dabei" };
+const SCALE_DESC = {
+  0: "Ach nö", 1: "Trage ich nicht", 2: "Skepsis", 3: "Skepsis überwiegt",
+  4: "Vorbehalte", 5: "Mittendrin", 6: "Passt", 7: "Trage mit",
+  8: "Trage voll mit", 9: "Sehr stark", 10: "Voll dabei — gesetzt"
+};
+
+function colorForValue(v) {
+  if (v <= 2) return "var(--red)";
+  if (v <= 4) return "var(--orange)";
+  if (v <= 6) return "var(--yellow)";
+  if (v <= 8) return "var(--green)";
+  return "var(--navy)";
+}
+
+const state = { current: 0, answers: {}, playerName: "" };
+
+function startGame() {
+  state.playerName = document.getElementById('player-name').value.trim() || "Anonym";
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('game-area').classList.remove('hidden');
+  renderFrage();
+}
+
+function renderFrage() {
+  const f = FRAGEN[state.current];
+  const container = document.getElementById('frage-container');
+  const answered = state.answers[f.nr] || {};
+  const blockTag = f.block === 'A' ? 'block-tag' : (f.block === 'B' ? 'block-tag b' : 'block-tag c');
+  const blockLabel = f.block === 'A' ? 'Block A · Stimmungsbarometer' : (f.block === 'B' ? 'Block B · Strategische Klärung' : 'Block C · Offene Frage');
+
+  let bodyHTML = '';
+
+  if (f.type === 'skala') {
+    let buttonsHTML = '', labelsHTML = '';
+    for (let i = 0; i <= 10; i++) {
+      const sel = answered.value === i ? 'selected' : '';
+      buttonsHTML += `<button class="scale-btn ${sel}" onclick="selectValue(${i})">${i}</button>`;
+      labelsHTML += `<div>${SCALE_LABELS[i] || ''}</div>`;
+    }
+    let currentHTML = '';
+    if (answered.value !== undefined) {
+      currentHTML = `<div class="current-choice" style="background: ${colorForValue(answered.value)};"><strong style="font-size: 1.1rem; margin-right: 10px;">${answered.value} / 10</strong> ${SCALE_DESC[answered.value]}</div>`;
+    } else {
+      currentHTML = `<div class="current-choice empty">Noch keine Bewertung — klick einen Wert oben</div>`;
+    }
+    bodyHTML = `
+      <span class="label">Deine Stimmung (0 = trage ich nicht · 10 = voll dabei)</span>
+      <div class="scale-container">
+        <div class="scale-buttons">${buttonsHTML}</div>
+        <div class="scale-labels">${labelsHTML}</div>
+      </div>
+      ${currentHTML}
+    `;
+  }
+
+  if (f.type === 'multiselect') {
+    const selected = answered.selected || [];
+    let optsHTML = '';
+    f.optionen.forEach(o => {
+      const sel = selected.includes(o.id) ? 'selected' : '';
+      optsHTML += `
+        <label class="option-row ${sel}">
+          <input type="checkbox" ${selected.includes(o.id) ? 'checked' : ''} onchange="toggleOption('${o.id}')">
+          <div class="option-text"><strong>${o.label}</strong><span class="desc">${o.desc}</span></div>
+        </label>`;
+    });
+    const hint = f.maxSelect ? `Bis zu ${f.maxSelect} Optionen wählbar` : "Mehrfach-Auswahl möglich";
+    bodyHTML = `<span class="label">${hint}</span><div class="option-list">${optsHTML}</div>`;
+  }
+
+  if (f.type === 'single') {
+    const choice = answered.choice;
+    let optsHTML = '';
+    f.optionen.forEach(o => {
+      const sel = choice === o.id ? 'selected' : '';
+      optsHTML += `
+        <label class="option-row ${sel}">
+          <input type="radio" name="single-${f.nr}" ${choice === o.id ? 'checked' : ''} onchange="setChoice('${o.id}')">
+          <div class="option-text"><strong>${o.label}</strong><span class="desc">${o.desc}</span></div>
+        </label>`;
+    });
+    bodyHTML = `<span class="label">Eine Option wählen</span><div class="option-list">${optsHTML}</div>`;
+  }
+
+  // Freitext-Feld für alle Fragetypen
+  const ftClass = f.type === 'open' ? 'large' : '';
+  const ftLabel = f.freetextLabel || 'Deine Schärfung (optional)';
+  bodyHTML += `
+    <div style="margin-top: 14px;">
+      <span class="label">${ftLabel}${f.type === 'open' ? '' : ' — optional'}</span>
+      <textarea class="${ftClass}" id="freetext" placeholder="${f.type === 'open' ? 'Was ist dir wichtig? Was darf morgen nicht untergehen?' : 'Hinweis, Variante, Risiko, eigene Idee...'}">${answered.freetext || ''}</textarea>
+    </div>`;
+
+  container.innerHTML = `
+    <div class="card">
+      <span class="${blockTag}">${blockLabel} · Frage ${state.current + 1} von ${FRAGEN.length}</span>
+      <h2 class="frage-titel">${f.titel}</h2>
+      <p class="erklaerung">${f.erklaerung}</p>
+      ${bodyHTML}
+      <div class="nav">
+        <button class="secondary" onclick="prevFrage()" ${state.current === 0 ? 'disabled' : ''}>← Zurück</button>
+        <button class="accent" onclick="nextFrage()">${state.current === FRAGEN.length - 1 ? 'Auswertung →' : 'Weiter →'}</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('progress').style.width = ((state.current + 1) / FRAGEN.length * 100) + '%';
+}
+
+function selectValue(v) {
+  const f = FRAGEN[state.current];
+  if (!state.answers[f.nr]) state.answers[f.nr] = {};
+  state.answers[f.nr].value = v;
+  saveFreetext();
+  renderFrage();
+}
+
+function toggleOption(id) {
+  const f = FRAGEN[state.current];
+  if (!state.answers[f.nr]) state.answers[f.nr] = {};
+  if (!state.answers[f.nr].selected) state.answers[f.nr].selected = [];
+  const idx = state.answers[f.nr].selected.indexOf(id);
+  if (idx >= 0) {
+    state.answers[f.nr].selected.splice(idx, 1);
+  } else {
+    if (f.maxSelect && state.answers[f.nr].selected.length >= f.maxSelect) {
+      alert("Maximal " + f.maxSelect + " Optionen wählbar. Bitte zuerst eine andere abwählen.");
+      return;
+    }
+    state.answers[f.nr].selected.push(id);
+  }
+  saveFreetext();
+  renderFrage();
+}
+
+function setChoice(id) {
+  const f = FRAGEN[state.current];
+  if (!state.answers[f.nr]) state.answers[f.nr] = {};
+  state.answers[f.nr].choice = id;
+  saveFreetext();
+  renderFrage();
+}
+
+function saveFreetext() {
+  const f = FRAGEN[state.current];
+  if (!state.answers[f.nr]) state.answers[f.nr] = {};
+  const ft = document.getElementById('freetext');
+  if (ft) state.answers[f.nr].freetext = ft.value;
+}
+
+function nextFrage() {
+  saveFreetext();
+  if (state.current < FRAGEN.length - 1) { state.current++; renderFrage(); }
+  else showResult();
+}
+
+function prevFrage() {
+  saveFreetext();
+  if (state.current > 0) { state.current--; renderFrage(); }
+}
+
+function labelForOption(f, id) {
+  if (!f.optionen) return id;
+  const o = f.optionen.find(x => x.id === id);
+  return o ? o.label : id;
+}
+
+function showResult() {
+  document.getElementById('game-area').classList.add('hidden');
+  const area = document.getElementById('result-area');
+  area.classList.remove('hidden');
+
+  // BLOCK A — Stimmungsbarometer-Aussage
+  const blockA = FRAGEN.filter(f => f.block === 'A');
+  const blockAvalues = blockA.map(f => state.answers[f.nr] && state.answers[f.nr].value).filter(v => v !== undefined);
+  const blockAavg = blockAvalues.length ? (blockAvalues.reduce((a,b)=>a+b,0) / blockAvalues.length) : null;
+  let blockAtext = '';
+  if (blockAavg === null) {
+    blockAtext = 'Keine Stimmung abgegeben.';
+  } else {
+    const lowest = blockA.reduce((acc, f) => {
+      const v = state.answers[f.nr] && state.answers[f.nr].value;
+      if (v === undefined) return acc;
+      if (!acc || v < acc.v) return {nr: f.nr, titel: f.titel, v: v};
+      return acc;
+    }, null);
+    if (blockAavg >= 7) {
+      blockAtext = `Methodischer Kern <strong>trägt</strong> bei dir — Durchschnitt ${blockAavg.toFixed(1)} / 10. ${lowest && lowest.v < 7 ? `Schwächster Punkt: ${lowest.nr} (${lowest.v}/10) — falls dort Klärungsbedarf, im Check-in einbringen.` : 'Alle drei Bausteine bekommen klare Zustimmung.'}`;
+    } else if (blockAavg >= 5) {
+      blockAtext = `Methodischer Kern wird <strong>mitgetragen mit Vorbehalten</strong> — Durchschnitt ${blockAavg.toFixed(1)} / 10. Schwächster Punkt: ${lowest.nr} (${lowest.v}/10) — bring deinen Vorbehalt im Check-in ein.`;
+    } else {
+      blockAtext = `Methodischer Kern <strong>knirscht bei dir</strong> — Durchschnitt ${blockAavg.toFixed(1)} / 10. Das ist ein klares Signal: hier müssen wir morgen nachschärfen, nicht weitergehen.`;
+    }
+  }
+
+  // BLOCK B — Strategische Position
+  const s1 = state.answers["S1"] || {};
+  const s2 = state.answers["S2"] || {};
+  const s3 = state.answers["S3"] || {};
+  const s4 = state.answers["S4"] || {};
+  const s5 = state.answers["S5"] || {};
+  const f1 = FRAGEN.find(f=>f.nr==="S1"), f2 = FRAGEN.find(f=>f.nr==="S2"), f3 = FRAGEN.find(f=>f.nr==="S3"), f4 = FRAGEN.find(f=>f.nr==="S4"), f5 = FRAGEN.find(f=>f.nr==="S5");
+  const s1selected = (s1.selected || []).map(id => labelForOption(f1, id));
+  const s1text = s1selected.length ? s1selected.join(' · ') : '— keine Auswahl —';
+  const s2text = s2.choice ? labelForOption(f2, s2.choice) : '— keine Wahl —';
+  const s3text = s3.choice ? labelForOption(f3, s3.choice) : (s3.freetext ? `Eigener Vorschlag: „${escapeHTML(s3.freetext.substring(0, 80))}${s3.freetext.length > 80 ? '…' : ''}“` : '— keine Wahl —');
+  const s4text = s4.choice ? labelForOption(f4, s4.choice) : '— keine Wahl —';
+  const s5selected = (s5.selected || []).map(id => labelForOption(f5, id));
+  const s5text = s5selected.length ? s5selected.join(' · ') : '— keine Auswahl —';
+
+  let blockBtext = `<strong>Format:</strong> ${escapeHTML(s1text)}<br><strong>Futures Literacy:</strong> ${escapeHTML(s2text)}<br><strong>Leitfrage:</strong> ${escapeHTML(s3text)}<br><strong>Akquise:</strong> ${escapeHTML(s4text)}<br><strong>Methodische Varianten:</strong> ${escapeHTML(s5text)}`;
+
+  // BLOCK C — Eigene Schärfung
+  const c1 = state.answers["C1"] || {};
+  let blockCtext = '';
+  if (c1.freetext && c1.freetext.trim().length > 0) {
+    const short = c1.freetext.length > 280 ? c1.freetext.substring(0, 280) + '…' : c1.freetext;
+    blockCtext = `„${escapeHTML(short)}“`;
+  } else {
+    blockCtext = '<em>Keine eigene Schärfung notiert — kein Problem, im Check-in besprechen.</em>';
+  }
+
+  // Summary aller Fragen
+  const summary = FRAGEN.map(f => {
+    const a = state.answers[f.nr] || {};
+    let answerHTML = '';
+    if (f.type === 'skala') {
+      if (a.value !== undefined) answerHTML = `<span class="answer" style="background: ${colorForValue(a.value)};">${a.value} / 10 · ${SCALE_DESC[a.value]}</span>`;
+      else answerHTML = '<span style="color: var(--muted); font-style: italic;">— nicht bewertet —</span>';
+    } else if (f.type === 'multiselect') {
+      const sel = (a.selected || []).map(id => labelForOption(f, id));
+      answerHTML = sel.length ? `<span class="answer" style="background: var(--navy);">${escapeHTML(sel.join(' · '))}</span>` : '<span style="color: var(--muted); font-style: italic;">— keine Auswahl —</span>';
+    } else if (f.type === 'single') {
+      if (a.choice) answerHTML = `<span class="answer" style="background: var(--navy);">${escapeHTML(labelForOption(f, a.choice))}</span>`;
+      else answerHTML = '<span style="color: var(--muted); font-style: italic;">— keine Wahl —</span>';
+    } else if (f.type === 'open') {
+      answerHTML = a.freetext ? `<span class="answer" style="background: var(--green);">Freitext abgegeben</span>` : '<span style="color: var(--muted); font-style: italic;">— kein Freitext —</span>';
+    }
+    const ft = a.freetext ? `<div class="freetext">💭 „${escapeHTML(a.freetext)}“</div>` : '';
+    return `<div class="summary-frage"><strong>${f.nr}:</strong> ${f.titel}<br>${answerHTML}${ft}</div>`;
+  }).join('');
+
+  // Export-Text
+  const lines = [
+    `Bewertung: ${state.playerName}`,
+    `Datum: ${new Date().toLocaleString('de-DE')}`,
+    blockAvalues.length ? `Stimmungsbarometer (Block A): Ø ${blockAavg.toFixed(1)} / 10` : `Stimmungsbarometer (Block A): keine Bewertung`,
+    ``,
+    `=== BLOCK A — STIMMUNGSBAROMETER ===`,
+    ``
+  ];
+  blockA.forEach(f => {
+    const a = state.answers[f.nr] || {};
+    lines.push(`${f.nr}: ${f.titel}`);
+    if (a.value !== undefined) lines.push(`  Bewertung: ${a.value} / 10 (${SCALE_DESC[a.value]})`);
+    else lines.push(`  -- nicht bewertet --`);
+    if (a.freetext) lines.push(`  Schärfung: ${a.freetext}`);
+    lines.push('');
+  });
+  lines.push(`=== BLOCK B — STRATEGISCHE KLÄRUNG ===`, ``);
+  FRAGEN.filter(f => f.block === 'B').forEach(f => {
+    const a = state.answers[f.nr] || {};
+    lines.push(`${f.nr}: ${f.titel}`);
+    if (f.type === 'multiselect') {
+      const sel = (a.selected || []).map(id => labelForOption(f, id));
+      lines.push(`  Auswahl: ${sel.length ? sel.join(' · ') : '— keine —'}`);
+    } else if (f.type === 'single') {
+      lines.push(`  Wahl: ${a.choice ? labelForOption(f, a.choice) : '— keine —'}`);
+    }
+    if (a.freetext) lines.push(`  Begründung/Ergänzung: ${a.freetext}`);
+    lines.push('');
+  });
+  lines.push(`=== BLOCK C — OFFENE FRAGE ===`, ``);
+  const c = state.answers["C1"] || {};
+  lines.push(`C1: ${FRAGEN.find(f=>f.nr==="C1").titel}`);
+  lines.push(`  ${c.freetext ? c.freetext : '-- kein Freitext --'}`);
+
+  area.innerHTML = `
+    <div class="result-hero">
+      <h2 style="margin-bottom: 6px;">Dein Profil</h2>
+      <div style="opacity: 0.8; font-size: 0.9rem;">${state.playerName} · ${new Date().toLocaleString('de-DE')}</div>
+      <div class="result-line">
+        <strong>🎯 Methodischer Kern (Block A)</strong>
+        ${blockAtext}
+      </div>
+      <div class="result-line">
+        <strong>🧭 Strategische Position (Block B)</strong>
+        ${blockBtext}
+      </div>
+      <div class="result-line">
+        <strong>✏️ Eigene Schärfung (Block C)</strong>
+        ${blockCtext}
+      </div>
+    </div>
+    <h2 style="color: var(--navy); margin-top: 28px;">Deine Antworten im Detail</h2>
+    ${summary}
+    <div class="card">
+      <h2>Exportieren — und an Klaus + André schicken</h2>
+      <p>Bis Dienstag 10:30 Uhr an <strong>burmeister@foresightlab.de</strong> und <strong>winzer@schaltzeit.com</strong>.</p>
+      <div class="export-area" id="export-text">${escapeHTML(lines.join('\n'))}</div>
+      <div class="nav">
+        <button class="secondary" onclick="restart()">Nochmal spielen</button>
+        <button class="accent" onclick="copyExport()">📋 In Zwischenablage kopieren</button>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHTML(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function copyExport() {
+  const text = document.getElementById('export-text').textContent;
+  navigator.clipboard.writeText(text).then(() => alert("In Zwischenablage kopiert."), () => alert("Bitte manuell mit Strg+C / Cmd+C."));
+}
+function restart() {
+  state.current = 0; state.answers = {};
+  document.getElementById('result-area').classList.add('hidden');
+  document.getElementById('result-area').innerHTML = '';
+  document.getElementById('intro').classList.remove('hidden');
+  document.getElementById('player-name').value = '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UFL — Auswertungs-Tool für Klaus</title>
+<style>
+  :root { --navy: #1F3A5F; --accent: #B25E2E; --bg: #FAFAF7; --card: #FFF; --text: #1A1A1A; --muted: #555; --border: #DDD; --red: #B23A2E; --orange: #C77B30; --yellow: #E6B800; --green: #4F8A3A; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.55; }
+  .container { max-width: 920px; margin: 0 auto; padding: 30px 24px; }
+  header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--navy); }
+  h1 { color: var(--navy); font-size: 1.55rem; margin: 0 0 6px 0; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; font-style: italic; margin: 0; }
+  h2 { color: var(--navy); font-size: 1.2rem; margin: 24px 0 12px 0; }
+  h3 { color: var(--navy); font-size: 1.05rem; margin: 18px 0 8px 0; }
+  .card { background: var(--card); border-radius: 8px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 16px; }
+  .note { background: #FFF8F2; border: 1.5px dashed var(--accent); padding: 14px 18px; border-radius: 8px; margin: 16px 0; font-size: 0.92rem; color: var(--muted); }
+  .note strong { color: var(--accent); }
+  textarea { width: 100%; min-height: 260px; border: 1.5px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: 'Menlo', 'Monaco', monospace; font-size: 0.85rem; resize: vertical; line-height: 1.45; }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  button { background: var(--navy); color: white; border: none; padding: 12px 22px; border-radius: 6px; font-size: 0.95rem; cursor: pointer; font-weight: 600; transition: background 0.15s ease; }
+  button:hover { background: #2E4F7E; }
+  button.accent { background: var(--accent); }
+  button.accent:hover { background: #D17536; }
+  button.secondary { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+  button.secondary:hover { background: #F0F4F8; }
+  .nav { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .summary-hero { background: linear-gradient(135deg, var(--navy), #2E4F7E); color: white; border-radius: 12px; padding: 26px; margin-bottom: 18px; }
+  .summary-hero h2 { color: white; margin-top: 0; margin-bottom: 12px; }
+  .verdict { background: rgba(255,255,255,0.12); padding: 14px 18px; border-radius: 8px; margin-top: 12px; font-size: 0.97rem; }
+  .verdict strong.tag { color: white; display: block; margin-bottom: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.6px; }
+  .check-in-line { background: var(--accent); color: white; padding: 14px 18px; border-radius: 8px; margin-top: 16px; font-weight: 600; font-size: 1rem; }
+  .dim-card { border-left: 4px solid var(--navy); padding-left: 14px; }
+  .dim-card.b { border-color: var(--accent); }
+  .dim-card.c { border-color: var(--green); }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--navy); font-weight: 700; background: #F8F5F1; }
+  .schaerfung-quote { background: #F8F5F1; padding: 9px 14px; border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; margin: 6px 0; font-size: 0.92rem; color: var(--text); }
+  .schaerfung-quote strong { color: var(--green); display: inline-block; margin-right: 6px; }
+  .option-bar { background: #F0F0EC; border-radius: 4px; height: 22px; position: relative; overflow: hidden; margin: 4px 0; }
+  .option-bar-fill { height: 100%; }
+  .option-bar-label { position: absolute; top: 50%; left: 10px; transform: translateY(-50%); font-size: 0.82rem; color: white; font-weight: 600; mix-blend-mode: difference; }
+  .punktline { font-size: 0.92rem; margin: 4px 0; }
+  .lesart { margin-top: 12px; font-size: 0.9rem; color: var(--muted); font-style: italic; padding: 8px 12px; background: #F8F5F1; border-radius: 6px; }
+  .lesart strong { color: var(--navy); font-style: normal; }
+  .warn { background: #FFF0E8; border: 1.5px solid var(--orange); padding: 12px 16px; border-radius: 6px; margin: 10px 0; color: var(--orange); font-size: 0.92rem; }
+  .meta { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--border); }
+  @media print { .no-print { display: none !important; } body { background: white; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="no-print">
+    <h1>UFL — Auswertungs-Tool</h1>
+    <p class="subtitle">Für Klaus alleine · Konsortium Urban Future Labs · 12.05.2026</p>
+  </header>
+
+  <div class="no-print">
+    <div class="note">
+      <strong>So gehst du vor:</strong><br>
+      (1) Sammle alle eingegangenen Mails — kopiere aus jeder den Export-Text der Konsortialpartner heraus.<br>
+      (2) Klebe alle Texte hier in das Feld unten — alles hintereinander, kein Trenner nötig. Das Tool erkennt jeden neuen Eintrag automatisch am Zeilenanfang „Bewertung: ".<br>
+      (3) Klick „Auswerten →" — du siehst die fertige Aggregation. Per Knopf kannst du sie speichern, drucken oder den Inhalt für eine Mail kopieren.
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Spielergebnisse einkleben</h3>
+      <textarea id="input" placeholder="Bewertung: Magdalena Soetebeer&#10;Datum: 12.05.2026, 09:14:33&#10;Stimmungsbarometer (Block A): Ø 8.3 / 10&#10;...&#10;&#10;Bewertung: André Winzer&#10;Datum: 12.05.2026, 09:32:17&#10;..."></textarea>
+      <div class="nav">
+        <button class="accent" onclick="aggregieren()">Auswerten →</button>
+        <button class="secondary" onclick="beispiel()">Beispiel-Daten laden</button>
+        <button class="secondary" onclick="loeschen()">Zurücksetzen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <div class="meta no-print">Klaus Burmeister (foresightlab) · André Winzer (schaltzeit) · UFL-Auswertungs-Tool · 12. Mai 2026</div>
+</div>
+
+<script>
+// --- Definitionen pro Frage ---
+const FRAGEN_DEF = {
+  "B1": { titel: "DES-Ansatz — Diagnose · Exploration · Strategie", typ: "skala", block: "A" },
+  "B2": { titel: "Lernendes Toolkit — zwei Wellen mit Update v2", typ: "skala", block: "A" },
+  "B3": { titel: "Drei Diskurs-Linien als gemeinsame Setzung", typ: "skala", block: "A" },
+  "S1": { titel: "Format & Mehrwert", typ: "multi", block: "B" },
+  "S2": { titel: "Futures Literacy — wie zentral?", typ: "single", block: "B" },
+  "S3": { titel: "Leitfrage", typ: "single", block: "B" },
+  "S4": { titel: "Akquise — unterforschte Kommunen", typ: "single", block: "B" },
+  "S5": { titel: "Methodische Varianten", typ: "multi", block: "B" },
+  "C1": { titel: "Was muss morgen unbedingt geklärt werden?", typ: "open", block: "C" }
+};
+
+// --- Parser: aus dem rohen Text alle Einträge extrahieren ---
+function parsen(text) {
+  // jeder Block beginnt mit "Bewertung: " am Zeilenanfang
+  const blöcke = text.split(/\n(?=Bewertung:\s)/g).filter(b => /Bewertung:/.test(b));
+  const einträge = blöcke.map(parseEintrag);
+  return einträge;
+}
+
+function parseEintrag(block) {
+  const eintrag = { name: "Anonym", datum: "", antworten: {}, warnungen: [] };
+  const lines = block.split('\n');
+  // Name aus erster Zeile
+  const nameMatch = lines[0].match(/Bewertung:\s*(.+)/);
+  if (nameMatch) eintrag.name = nameMatch[1].trim();
+  const datumLine = lines.find(l => /^Datum:/.test(l));
+  if (datumLine) eintrag.datum = datumLine.replace(/^Datum:\s*/, '').trim();
+
+  // pro Frage suchen
+  for (const code of Object.keys(FRAGEN_DEF)) {
+    const def = FRAGEN_DEF[code];
+    // Code-Zeile finden
+    const codeRegex = new RegExp("^" + code + ":\\s", "m");
+    const codeMatch = block.match(codeRegex);
+    if (!codeMatch) continue;
+    const codeIdx = block.indexOf(codeMatch[0]);
+    // Bereich bis zur nächsten Frage oder Block-Trenner
+    const restText = block.substring(codeIdx);
+    const nextFragMatch = restText.substring(code.length + 2).match(/\n(B\d|S\d|C\d):\s|^={3,}|\n={3,}/m);
+    const ende = nextFragMatch ? nextFragMatch.index + code.length + 2 : restText.length;
+    const bereich = restText.substring(0, ende);
+
+    const a = {};
+    if (def.typ === "skala") {
+      const bm = bereich.match(/Bewertung:\s*(\d+)\s*\/\s*10/);
+      if (bm) a.value = parseInt(bm[1]);
+    }
+    if (def.typ === "multi") {
+      const am = bereich.match(/Auswahl:\s*(.+)/);
+      if (am) {
+        const text = am[1].trim();
+        a.selected = text === "— keine —" || text === "-- keine --" ? [] : text.split(/\s*·\s*/);
+      }
+    }
+    if (def.typ === "single") {
+      const wm = bereich.match(/Wahl:\s*(.+)/);
+      if (wm) {
+        const text = wm[1].trim();
+        a.choice = text === "— keine —" || text === "-- keine --" ? null : text;
+      }
+    }
+    // Freitext (Schärfung / Begründung)
+    const ftm = bereich.match(/(?:Schärfung|Begründung[\/]?(?:Ergänzung)?|Begründung|Eigene Idee):\s*([\s\S]*?)(?=\n\s*(?:B\d|S\d|C\d):\s|\n\s*={3,}|$)/);
+    if (ftm) a.freetext = ftm[1].trim();
+    // C1 hat direkt den Text in der Folgezeile (eingerückt)
+    if (def.typ === "open" && !a.freetext) {
+      // Alles ab erster Folgezeile, eingerückt, bis Block-Ende
+      const idx = bereich.indexOf('\n');
+      if (idx >= 0) {
+        const tail = bereich.substring(idx + 1).trim();
+        if (tail && tail !== "-- kein Freitext --") a.freetext = tail;
+      }
+    }
+    eintrag.antworten[code] = a;
+  }
+
+  return eintrag;
+}
+
+// --- Aggregation ---
+function aggregieren() {
+  const text = document.getElementById('input').value.trim();
+  if (!text) { alert("Bitte zuerst Spielergebnisse in das Feld einkleben."); return; }
+  const einträge = parsen(text);
+  if (einträge.length === 0) {
+    document.getElementById('output').innerHTML = '<div class="warn">⚠ Keine Einträge erkannt. Achte darauf, dass jeder Eintrag mit der Zeile „Bewertung: [Name]" beginnt.</div>';
+    return;
+  }
+  renderAuswertung(einträge);
+}
+
+function aggregateSkala(einträge, code) {
+  const werte = einträge.map(e => e.antworten[code] && e.antworten[code].value).filter(v => typeof v === 'number');
+  if (werte.length === 0) return { count: 0, avg: null, min: null, max: null, werte: [] };
+  return {
+    count: werte.length,
+    avg: werte.reduce((a,b)=>a+b,0)/werte.length,
+    min: Math.min(...werte),
+    max: Math.max(...werte),
+    werte
+  };
+}
+
+function aggregateMulti(einträge, code) {
+  const counts = {};
+  einträge.forEach(e => {
+    const sel = (e.antworten[code] && e.antworten[code].selected) || [];
+    sel.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
+  });
+  return counts;
+}
+
+function aggregateSingle(einträge, code) {
+  const counts = {};
+  einträge.forEach(e => {
+    const ch = e.antworten[code] && e.antworten[code].choice;
+    if (ch) counts[ch] = (counts[ch] || 0) + 1;
+  });
+  return counts;
+}
+
+function freitexteFür(einträge, code) {
+  return einträge.map(e => ({
+    name: e.name,
+    text: e.antworten[code] && e.antworten[code].freetext
+  })).filter(x => x.text && x.text.length > 0);
+}
+
+function balkenHTML(counts, total) {
+  const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+  if (sorted.length === 0) return '<div class="lesart">Keine Auswahl in den Eingaben.</div>';
+  return sorted.map(([opt, count]) => {
+    const pct = Math.round(100 * count / total);
+    const farbe = pct >= 60 ? 'var(--green)' : (pct >= 33 ? 'var(--accent)' : 'var(--orange)');
+    return `
+      <div class="punktline"><strong>${escapeHTML(opt)}</strong> <span style="color:var(--muted);">— ${count} von ${total} Stimmen</span></div>
+      <div class="option-bar"><div class="option-bar-fill" style="width:${pct}%; background:${farbe};"></div><span class="option-bar-label">${pct} %</span></div>
+    `;
+  }).join('');
+}
+
+function renderAuswertung(einträge) {
+  const N = einträge.length;
+  const B1 = aggregateSkala(einträge, "B1");
+  const B2 = aggregateSkala(einträge, "B2");
+  const B3 = aggregateSkala(einträge, "B3");
+  const blockAvg = [B1, B2, B3].filter(x => x.avg !== null);
+  const gesamtAvg = blockAvg.length ? blockAvg.reduce((s,x)=>s+x.avg,0)/blockAvg.length : null;
+
+  const S1c = aggregateMulti(einträge, "S1");
+  const S2c = aggregateSingle(einträge, "S2");
+  const S3c = aggregateSingle(einträge, "S3");
+  const S4c = aggregateSingle(einträge, "S4");
+  const S5c = aggregateMulti(einträge, "S5");
+
+  const C1ft = freitexteFür(einträge, "C1");
+
+  // Hero-Texte
+  let blockAtext = "Keine Stimmungs-Werte erkannt.";
+  if (gesamtAvg !== null) {
+    if (gesamtAvg >= 7.5) blockAtext = `Methodischer Kern <strong>trägt klar</strong> — Durchschnitt ${gesamtAvg.toFixed(1)} / 10 (B1: ${B1.avg.toFixed(1)} · B2: ${B2.avg.toFixed(1)} · B3: ${B3.avg.toFixed(1)}). Wir können den Kern als gemeinsame Linie in die Bewerbung schreiben.`;
+    else if (gesamtAvg >= 6) blockAtext = `Methodischer Kern wird <strong>mitgetragen</strong> — Durchschnitt ${gesamtAvg.toFixed(1)} / 10 (B1: ${B1.avg.toFixed(1)} · B2: ${B2.avg.toFixed(1)} · B3: ${B3.avg.toFixed(1)}). Einige Vorbehalte sichtbar, im Check-in besprechen.`;
+    else blockAtext = `Methodischer Kern <strong>umstritten</strong> — Durchschnitt ${gesamtAvg.toFixed(1)} / 10. Hier muss morgen nachgeschärft werden.`;
+  }
+
+  // Block B Hero-Zeile
+  const top = (counts) => {
+    const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+    return sorted.length ? `${sorted[0][0]} (${sorted[0][1]}/${N})` : "keine Auswahl";
+  };
+  const blockBtext = `
+    <strong>Format:</strong> Top — ${escapeHTML(top(S1c))}<br>
+    <strong>Futures Literacy:</strong> ${escapeHTML(top(S2c))}<br>
+    <strong>Leitfrage:</strong> ${escapeHTML(top(S3c))}<br>
+    <strong>Akquise:</strong> ${escapeHTML(top(S4c))}<br>
+    <strong>Methodische Varianten:</strong> Top — ${escapeHTML(top(S5c))}
+  `;
+
+  // Block C Klärungsagenda
+  let blockCtext = '';
+  if (C1ft.length === 0) blockCtext = '<em>Keine Block-C-Antworten erkannt.</em>';
+  else blockCtext = `<strong>${C1ft.length} Personen haben Klärungsbedarf benannt:</strong> ${C1ft.map(x => escapeHTML(x.name)).join(' · ')}`;
+
+  const html = `
+    <div class="summary-hero">
+      <h2>Gesamtaussage</h2>
+      <div style="font-size:0.92rem; opacity:0.85;">${N} Bewertung${N!==1?'en':''} · ${new Date().toLocaleString('de-DE')}</div>
+      <div class="verdict">
+        <strong class="tag">🎯 Methodischer Kern (Block A)</strong>
+        ${blockAtext}
+      </div>
+      <div class="verdict">
+        <strong class="tag">🧭 Strategische Position (Block B)</strong>
+        ${blockBtext}
+      </div>
+      <div class="verdict">
+        <strong class="tag">✏️ Klärungsagenda (Block C)</strong>
+        ${blockCtext}
+      </div>
+      <div class="check-in-line">🎤 Check-in-Tagesordnung 12:30 Uhr: Block-A-Skepsis besprechen · Block-B-Mehrheiten verabschieden · Block-C-Punkte abarbeiten.</div>
+    </div>
+
+    <h2>Block A — Stimmungsbarometer</h2>
+    <div class="card dim-card">
+      <table>
+        <thead><tr><th>Frage</th><th>Ø</th><th>Min</th><th>Max</th><th>Werte</th></tr></thead>
+        <tbody>
+          <tr><td><strong>B1</strong> DES-Ansatz</td><td>${B1.avg !== null ? B1.avg.toFixed(1) : '—'}</td><td>${B1.min ?? '—'}</td><td>${B1.max ?? '—'}</td><td>${B1.werte.join(', ') || '—'}</td></tr>
+          <tr><td><strong>B2</strong> Lernendes Toolkit</td><td>${B2.avg !== null ? B2.avg.toFixed(1) : '—'}</td><td>${B2.min ?? '—'}</td><td>${B2.max ?? '—'}</td><td>${B2.werte.join(', ') || '—'}</td></tr>
+          <tr><td><strong>B3</strong> Drei Diskurs-Linien</td><td>${B3.avg !== null ? B3.avg.toFixed(1) : '—'}</td><td>${B3.min ?? '—'}</td><td>${B3.max ?? '—'}</td><td>${B3.werte.join(', ') || '—'}</td></tr>
+        </tbody>
+      </table>
+      ${freitextBlock("Schärfungen Block A", [...freitexteFür(einträge,"B1"), ...freitexteFür(einträge,"B2"), ...freitexteFür(einträge,"B3")])}
+    </div>
+
+    <h2>Block B — Strategische Klärung</h2>
+    <div class="card dim-card b">
+      <h3>S1 — Format & Mehrwert (Mehrfachauswahl)</h3>
+      ${balkenHTML(S1c, N)}
+      ${freitextBlock("Begründungen S1", freitexteFür(einträge, "S1"))}
+    </div>
+    <div class="card dim-card b">
+      <h3>S2 — Futures Literacy (Einzelwahl)</h3>
+      ${balkenHTML(S2c, N)}
+      ${freitextBlock("Begründungen S2", freitexteFür(einträge, "S2"))}
+    </div>
+    <div class="card dim-card b">
+      <h3>S3 — Leitfrage (Einzelwahl)</h3>
+      ${balkenHTML(S3c, N)}
+      ${freitextBlock("Begründungen S3", freitexteFür(einträge, "S3"))}
+    </div>
+    <div class="card dim-card b">
+      <h3>S4 — Akquise (Einzelwahl)</h3>
+      ${balkenHTML(S4c, N)}
+      ${freitextBlock("Begründungen S4", freitexteFür(einträge, "S4"))}
+    </div>
+    <div class="card dim-card b">
+      <h3>S5 — Methodische Varianten (Mehrfachauswahl)</h3>
+      ${balkenHTML(S5c, N)}
+      ${freitextBlock("Begründungen S5", freitexteFür(einträge, "S5"))}
+    </div>
+
+    <h2>Block C — Klärungsagenda für den Check-in</h2>
+    <div class="card dim-card c">
+      <p style="font-size:0.92rem; color:var(--muted); margin-top:0;"><strong>Was muss morgen unbedingt geklärt werden?</strong> Antworten der Konsortialpartner als Klärungs-Tagesordnung.</p>
+      ${C1ft.map(x => `<div class="schaerfung-quote"><strong>${escapeHTML(x.name)}:</strong> „${escapeHTML(x.text)}"</div>`).join('')}
+    </div>
+
+    <div class="nav no-print" style="margin-top:24px;">
+      <button class="accent" onclick="window.print()">🖨️ Drucken / als PDF speichern</button>
+      <button class="secondary" onclick="kopiereTextfassung()">📋 Text-Fassung in Zwischenablage kopieren</button>
+    </div>
+  `;
+  document.getElementById('output').innerHTML = html;
+  window.scrollTo({top: document.getElementById('output').offsetTop - 20, behavior: 'smooth'});
+  // Speichere für Textfassung
+  window._einträge = einträge;
+  window._aggregat = { N, B1, B2, B3, S1c, S2c, S3c, S4c, S5c, C1ft, gesamtAvg };
+}
+
+function freitextBlock(titel, items) {
+  if (items.length === 0) return '';
+  return `<div style="margin-top:10px;">
+    <div style="font-size:0.82rem; color:var(--navy); font-weight:600; margin-bottom:6px;">${escapeHTML(titel)}</div>
+    ${items.map(x => `<div class="schaerfung-quote"><strong>${escapeHTML(x.name)}:</strong> „${escapeHTML(x.text)}"</div>`).join('')}
+  </div>`;
+}
+
+function kopiereTextfassung() {
+  const a = window._aggregat;
+  if (!a) return;
+  const lines = [];
+  lines.push(`UFL Auswertung — Konsortium Urban Future Labs`);
+  lines.push(`${a.N} Bewertungen · Stand ${new Date().toLocaleString('de-DE')}`);
+  lines.push("");
+  lines.push("--- BLOCK A — STIMMUNGSBAROMETER ---");
+  lines.push(`B1 DES-Ansatz: Ø ${a.B1.avg !== null ? a.B1.avg.toFixed(1) : '—'} (Werte: ${a.B1.werte.join(', ')})`);
+  lines.push(`B2 Lernendes Toolkit: Ø ${a.B2.avg !== null ? a.B2.avg.toFixed(1) : '—'} (Werte: ${a.B2.werte.join(', ')})`);
+  lines.push(`B3 Drei Diskurs-Linien: Ø ${a.B3.avg !== null ? a.B3.avg.toFixed(1) : '—'} (Werte: ${a.B3.werte.join(', ')})`);
+  lines.push("");
+  lines.push("--- BLOCK B — STRATEGISCHE KLÄRUNG ---");
+  const dump = (titel, counts) => {
+    lines.push(titel);
+    Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([k,v]) => lines.push(`  ${k}: ${v}`));
+  };
+  dump("S1 Format (Mehrfachauswahl):", a.S1c);
+  dump("S2 Futures Literacy:", a.S2c);
+  dump("S3 Leitfrage:", a.S3c);
+  dump("S4 Akquise:", a.S4c);
+  dump("S5 Methodische Varianten (Mehrfachauswahl):", a.S5c);
+  lines.push("");
+  lines.push("--- BLOCK C — KLÄRUNGSAGENDA ---");
+  a.C1ft.forEach(x => { lines.push(`${x.name}: „${x.text}"`); lines.push(""); });
+  navigator.clipboard.writeText(lines.join('\n')).then(
+    () => alert("Text-Fassung kopiert — kannst du jetzt in eine Mail einfügen."),
+    () => alert("Bitte manuell kopieren.")
+  );
+}
+
+function escapeHTML(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function loeschen() {
+  document.getElementById('input').value = '';
+  document.getElementById('output').innerHTML = '';
+}
+
+function beispiel() {
+  document.getElementById('input').value = BEISPIEL_DATEN;
+  aggregieren();
+}
+
+const BEISPIEL_DATEN = `Bewertung: Magdalena Soetebeer
+Datum: 12.05.2026, 09:14:33
+Stimmungsbarometer (Block A): Ø 8.3 / 10
+
+=== BLOCK A — STIMMUNGSBAROMETER ===
+
+B1: DES-Ansatz — Diagnose · Exploration · Strategie
+  Bewertung: 9 / 10 (Sehr stark)
+  Schärfung: DES als Kernbegriff stark.
+
+B2: Lernendes Toolkit — zwei Wellen mit Update v2
+  Bewertung: 8 / 10 (Trage voll mit)
+  Schärfung: Zwei Wellen sauber.
+
+B3: Drei Diskurs-Linien als gemeinsame Setzung
+  Bewertung: 8 / 10 (Trage voll mit)
+  Schärfung: Linien tragen.
+
+=== BLOCK B — STRATEGISCHE KLÄRUNG ===
+
+S1: Format & Mehrwert
+  Auswahl: Klassisch · Plattform mit Trendradar & Bots · Wettbewerb
+  Begründung/Ergänzung: Klassisch als Fundament.
+
+S2: Futures Literacy
+  Wahl: Integration beider
+  Begründung/Ergänzung: Unser methodischer Lead.
+
+S3: Leitfrage
+  Wahl: "Was macht eure Stadt zukunftsfest?"
+  Begründung/Ergänzung: Niederschwellig.
+
+S4: Akquise
+  Wahl: Hybrid: Schneeball plus klassischer Aufruf
+  Begründung/Ergänzung: Sicherheitsnetz braucht es.
+
+S5: Methodische Varianten
+  Auswahl: Lernendes Toolkit (zwei Wellen + Update v2) · Köpfe öffnen (Peters Linie 1)
+  Begründung/Ergänzung: Reflexionsebene erhalten.
+
+=== BLOCK C — OFFENE FRAGE ===
+
+C1: Was muss morgen unbedingt geklärt werden?
+  Reflexionsebene als Lead in die Bewerbung schreiben.
+
+Bewertung: André Winzer
+Datum: 12.05.2026, 09:32:17
+
+=== BLOCK A — STIMMUNGSBAROMETER ===
+
+B1: DES-Ansatz — Diagnose · Exploration · Strategie
+  Bewertung: 8 / 10 (Trage voll mit)
+  Schärfung: Stresstest + Trendmoleküle ist die Pointe.
+
+B2: Lernendes Toolkit — zwei Wellen mit Update v2
+  Bewertung: 9 / 10 (Sehr stark)
+
+B3: Drei Diskurs-Linien als gemeinsame Setzung
+  Bewertung: 7 / 10 (Trage mit)
+
+=== BLOCK B — STRATEGISCHE KLÄRUNG ===
+
+S1: Format & Mehrwert
+  Auswahl: Klassisch · Plattform mit Trendradar & Bots · Folgeprozess im Zweijahres-Rhythmus
+  Begründung/Ergänzung: Plattform ist unser USP.
+
+S2: Futures Literacy
+  Wahl: Integration beider
+
+S3: Leitfrage
+  Wahl: "Was macht eure Stadt zukunftsfest?"
+
+S4: Akquise
+  Wahl: Hybrid: Schneeball plus klassischer Aufruf
+
+S5: Methodische Varianten
+  Auswahl: Lernendes Toolkit (zwei Wellen + Update v2) · Handlungspfade ableiten (Peters Linie 2)
+
+=== BLOCK C — OFFENE FRAGE ===
+
+C1: Was muss morgen unbedingt geklärt werden?
+  Plattform-Kostenposition für Kalkulation.
+
+Bewertung: Lisa Niese
+Datum: 12.05.2026, 09:48:02
+
+=== BLOCK A — STIMMUNGSBAROMETER ===
+
+B1: DES-Ansatz
+  Bewertung: 7 / 10 (Trage mit)
+
+B2: Lernendes Toolkit
+  Bewertung: 6 / 10 (Passt)
+  Schärfung: Versprechen schwierig — eher „unscharfes Toolkit".
+
+B3: Drei Diskurs-Linien
+  Bewertung: 7 / 10 (Trage mit)
+
+=== BLOCK B — STRATEGISCHE KLÄRUNG ===
+
+S1: Format & Mehrwert
+  Auswahl: Klassisch · "Wir sind Stadt" — als Mitmachformat der Bürger:innen
+
+S2: Futures Literacy
+  Wahl: Schwerpunkt Orientierungswissen
+
+S3: Leitfrage
+  Wahl: "Was hält eure Stadt am Laufen?"
+
+S4: Akquise
+  Wahl: Hybrid: Schneeball plus klassischer Aufruf
+
+S5: Methodische Varianten
+  Auswahl: Unscharfes Toolkit (Lisas Variante) · Handlungspfade ableiten (Peters Linie 2)
+
+=== BLOCK C — OFFENE FRAGE ===
+
+C1: Was muss morgen unbedingt geklärt werden?
+  Toolkit-Begriff klären — Standard oder unscharf, daran hängt die Lab-Architektur.`;
+</script>
+</body>
+</html>
